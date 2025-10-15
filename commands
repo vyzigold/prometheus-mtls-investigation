@@ -1,0 +1,3 @@
+oc create secret generic prometheus-httpd --from-file httpd.conf --from-file ssl.conf
+oc apply --server-side -f prometheus_httpd.yaml
+oc apply -f httpd-svc.yaml

@@ -1,0 +1,23 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: prometheus-client
+  namespace: openstack
+spec:
+  secretName: prometheus-client-cert
+  commonName: prometheus-client.openstack.svc
+  dnsNames:
+    - prometheus-client.openstack.svc
+    - prometheus-client.openstack.svc.cluster.local
+  privateKey:
+    algorithm: RSA
+    size: 2048
+    encoding: PKCS8
+  usages:
+    - digital signature
+    - key encipherment
+    - client auth
+  issuerRef:
+    kind: Issuer
+    name: rootca-internal
+

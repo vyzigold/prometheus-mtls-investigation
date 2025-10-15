@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: metric-storage-prometheus-httpd
+  namespace: openstack
+spec:
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - name: httpd
+    port: 9091
+    protocol: TCP
+    targetPort: 9091
+  selector:
+    app.kubernetes.io/component: prometheus
+    app.kubernetes.io/part-of: metric-storage
+  sessionAffinity: None
+  type: ClusterIP
