@@ -1,0 +1,306 @@
+apiVersion: perses.dev/v1alpha1
+kind: PersesDashboard
+metadata:
+  name: accelerators-dashboard
+  namespace: openstack
+spec:
+  display:
+    name: Accelerators common metrics
+  duration: 0s
+  layouts:
+  - kind: Grid
+    spec:
+      display:
+        collapse:
+          open: true
+        title: Accelerators
+      items:
+      - content:
+          $ref: '#/spec/panels/0_0'
+        height: 7
+        width: 12
+        x: 0
+        "y": 0
+      - content:
+          $ref: '#/spec/panels/0_1'
+        height: 7
+        width: 12
+        x: 12
+        "y": 0
+      - content:
+          $ref: '#/spec/panels/0_2'
+        height: 7
+        width: 12
+        x: 0
+        "y": 7
+      - content:
+          $ref: '#/spec/panels/0_3'
+        height: 7
+        width: 12
+        x: 12
+        "y": 7
+      - content:
+          $ref: '#/spec/panels/0_4'
+        height: 7
+        width: 12
+        x: 0
+        "y": 14
+      - content:
+          $ref: '#/spec/panels/0_5'
+        height: 7
+        width: 12
+        x: 12
+        "y": 14
+      - content:
+          $ref: '#/spec/panels/0_6'
+        height: 7
+        width: 12
+        x: 0
+        "y": 21
+  panels:
+    "0_0":
+      kind: Panel
+      spec:
+        display:
+          name: GPU Utilization
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              mode: list
+              position: bottom
+              values: []
+            visual:
+              areaOpacity: 1
+              connectNulls: false
+              display: line
+              lineWidth: 0.25
+              stack: all
+            yAxis:
+              format:
+                unit: decimal
+              min: 0
+        queries:
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  datasource:
+                    kind: PrometheusDatasource
+                  query: instance:node_network_receive_bytes_excluding_lo:rate1m{instance="192.168.122.100:9100"}
+          - kind: TimeSeriesQuery
+            spec:
+              plugin:
+                kind: PrometheusTimeSeriesQuery
+                spec:
+                  datasource:
+                    kind: PrometheusDatasource
+                  query: instance:node_network_transmit_bytes_excluding_lo:rate1m{instance="192.168.122.100:9100"}
+    "0_1":
+      kind: Panel
+      spec:
+        display:
+          name: Memory Used Bytes
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              mode: list
+              position: bottom
+              values: []
+            visual:
+              areaOpacity: 1
+              connectNulls: false
+              display: line
+              lineWidth: 0.25
+              stack: all
+            yAxis:
+              format:
+                unit: decimal
+              min: 0
+        queries:
+        - kind: TimeSeriesQuery
+          spec:
+            plugin:
+              kind: PrometheusTimeSeriesQuery
+              spec:
+                datasource:
+                  kind: PrometheusDatasource
+                query: accelerator_memory_used_bytes
+                seriesNameFormat: '{{vendor_id}}'
+    "0_2":
+      kind: Panel
+      spec:
+        display:
+          name: Memory Total Bytes
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              mode: list
+              position: bottom
+              values: []
+            visual:
+              areaOpacity: 1
+              connectNulls: false
+              display: line
+              lineWidth: 0.25
+              stack: all
+            yAxis:
+              format:
+                unit: decimal
+              min: 0
+        queries:
+        - kind: TimeSeriesQuery
+          spec:
+            plugin:
+              kind: PrometheusTimeSeriesQuery
+              spec:
+                datasource:
+                  kind: PrometheusDatasource
+                query: accelerator_memory_total_bytes
+                seriesNameFormat: '{{vendor_id}}'
+    "0_3":
+      kind: Panel
+      spec:
+        display:
+          name: Power Usage (watts)
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              mode: list
+              position: bottom
+              values: []
+            visual:
+              areaOpacity: 1
+              connectNulls: false
+              display: line
+              lineWidth: 0.25
+              stack: all
+            yAxis:
+              format:
+                unit: decimal
+              min: 0
+        queries:
+        - kind: TimeSeriesQuery
+          spec:
+            plugin:
+              kind: PrometheusTimeSeriesQuery
+              spec:
+                datasource:
+                  kind: PrometheusDatasource
+                query: accelerator_power_usage_watts
+                seriesNameFormat: '{{vendor_id}}'
+    "0_4":
+      kind: Panel
+      spec:
+        display:
+          name: Temperature (celcius)
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              mode: list
+              position: bottom
+              values: []
+            visual:
+              areaOpacity: 1
+              connectNulls: false
+              display: line
+              lineWidth: 0.25
+              stack: all
+            yAxis:
+              format:
+                unit: decimal
+              min: 0
+        queries:
+        - kind: TimeSeriesQuery
+          spec:
+            plugin:
+              kind: PrometheusTimeSeriesQuery
+              spec:
+                datasource:
+                  kind: PrometheusDatasource
+                query: accelerator_temperature_celcius
+                seriesNameFormat: '{{vendor_id}}'
+    "0_5":
+      kind: Panel
+      spec:
+        display:
+          name: SM Clock(hertz)
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              mode: list
+              position: bottom
+              values: []
+            visual:
+              areaOpacity: 1
+              connectNulls: false
+              display: line
+              lineWidth: 0.25
+              stack: all
+            yAxis:
+              format:
+                unit: decimal
+              min: 0
+        queries:
+        - kind: TimeSeriesQuery
+          spec:
+            plugin:
+              kind: PrometheusTimeSeriesQuery
+              spec:
+                datasource:
+                  kind: PrometheusDatasource
+                query: accelerator_sm_clock_hertz
+                seriesNameFormat: '{{vendor_id}}'
+    "0_6":
+      kind: Panel
+      spec:
+        display:
+          name: Memory Clock(hertz)
+        plugin:
+          kind: TimeSeriesChart
+          spec:
+            legend:
+              mode: list
+              position: bottom
+              values: []
+            visual:
+              areaOpacity: 1
+              connectNulls: false
+              display: line
+              lineWidth: 0.25
+              stack: all
+            yAxis:
+              format:
+                unit: decimal
+              min: 0
+        queries:
+        - kind: TimeSeriesQuery
+          spec:
+            plugin:
+              kind: PrometheusTimeSeriesQuery
+              spec:
+                datasource:
+                  kind: PrometheusDatasource
+                query: accelerator_memory_clock_hertz
+                seriesNameFormat: '{{vendor_id}}'
+  variables:
+  - kind: ListVariable
+    spec:
+      allowAllValue: false
+      allowMultiple: false
+      display:
+        hidden: false
+      name: cluster
+      plugin:
+        kind: PrometheusLabelValuesVariable
+        spec:
+          labelName: cluster
+          matchers:
+          - up{job="kubelet", metrics_path="/metrics/cadvisor"}
+      sort: alphabetical-asc

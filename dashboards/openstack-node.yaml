@@ -1,0 +1,251 @@
+apiVersion: perses.dev/v1alpha1
+kind: PersesDashboard
+metadata:
+    namespace: ""
+    name: openstack-node.go
+spec:
+    display:
+        name: Openstack / Node Exporter / USE Method / Node
+    variables:
+        - kind: ListVariable
+          spec:
+            display:
+                hidden: false
+            allowAllValue: false
+            allowMultiple: false
+            sort: alphabetical-asc
+            plugin:
+                kind: PrometheusLabelValuesVariable
+                spec:
+                    labelName: instance
+                    matchers:
+                        - node_load1
+            name: instance
+    panels:
+        "0":
+            kind: Panel
+            spec:
+                display:
+                    name: CPU Utilisation
+                plugin:
+                    kind: TimeSeriesChart
+                    spec: {}
+                queries:
+                    - kind: TimeSeriesQuery
+                      spec:
+                        plugin:
+                            kind: PrometheusTimeSeriesQuery
+                            spec:
+                                query: instance:node_cpu_utilisation:rate1m{instance='$instance'}
+                                seriesNameFormat: Utilisation
+        "1":
+            kind: Panel
+            spec:
+                display:
+                    name: CPU Saturation (Load1 per CPU)
+                plugin:
+                    kind: TimeSeriesChart
+                    spec: {}
+                queries:
+                    - kind: TimeSeriesQuery
+                      spec:
+                        plugin:
+                            kind: PrometheusTimeSeriesQuery
+                            spec:
+                                query: instance:node_load1_per_cpu:ratio{instance='$instance'}
+                                seriesNameFormat: Saturation
+        "2":
+            kind: Panel
+            spec:
+                display:
+                    name: Memory Utilisation
+                plugin:
+                    kind: TimeSeriesChart
+                    spec: {}
+                queries:
+                    - kind: TimeSeriesQuery
+                      spec:
+                        plugin:
+                            kind: PrometheusTimeSeriesQuery
+                            spec:
+                                query: instance:node_memory_utilisation:ratio{instance="$instance"}
+                                seriesNameFormat: Utilisation
+        "3":
+            kind: Panel
+            spec:
+                display:
+                    name: Memory Saturation (Major Page Faults)
+                plugin:
+                    kind: TimeSeriesChart
+                    spec: {}
+                queries:
+                    - kind: TimeSeriesQuery
+                      spec:
+                        plugin:
+                            kind: PrometheusTimeSeriesQuery
+                            spec:
+                                query: instance:node_vmstat_pgmajfault:rate1m{instance="$instance"}
+                                seriesNameFormat: Major page Faults
+        "4":
+            kind: Panel
+            spec:
+                display:
+                    name: Network Utilisation (Bytes Receive/Transmit)
+                plugin:
+                    kind: TimeSeriesChart
+                    spec: {}
+                queries:
+                    - kind: TimeSeriesQuery
+                      spec:
+                        plugin:
+                            kind: PrometheusTimeSeriesQuery
+                            spec:
+                                query: instance:node_network_receive_bytes_excluding_lo:rate1m{instance="$instance"}
+                                seriesNameFormat: Receive
+                    - kind: TimeSeriesQuery
+                      spec:
+                        plugin:
+                            kind: PrometheusTimeSeriesQuery
+                            spec:
+                                query: instance:node_network_transmit_bytes_excluding_lo:rate1m{instance="$instance"}
+                                seriesNameFormat: Transmit
+        "5":
+            kind: Panel
+            spec:
+                display:
+                    name: Network Saturation (Drops Receive/Transmit)
+                plugin:
+                    kind: TimeSeriesChart
+                    spec: {}
+                queries:
+                    - kind: TimeSeriesQuery
+                      spec:
+                        plugin:
+                            kind: PrometheusTimeSeriesQuery
+                            spec:
+                                query: instance:node_network_receive_drop_excluding_lo:rate1m{instance="$instance"}
+                                seriesNameFormat: Receive
+                    - kind: TimeSeriesQuery
+                      spec:
+                        plugin:
+                            kind: PrometheusTimeSeriesQuery
+                            spec:
+                                query: instance:node_network_transmit_drop_excluding_lo:rate1m{instance="$instance"}
+                                seriesNameFormat: Transmit
+        "6":
+            kind: Panel
+            spec:
+                display:
+                    name: Disk IO Utilisation
+                plugin:
+                    kind: TimeSeriesChart
+                    spec: {}
+                queries:
+                    - kind: TimeSeriesQuery
+                      spec:
+                        plugin:
+                            kind: PrometheusTimeSeriesQuery
+                            spec:
+                                query: instance_device:node_disk_io_time_seconds:rate1m{instance="$instance"}
+                                seriesNameFormat: '{{device}}'
+        "7":
+            kind: Panel
+            spec:
+                display:
+                    name: Disk IO Saturation
+                plugin:
+                    kind: TimeSeriesChart
+                    spec: {}
+                queries:
+                    - kind: TimeSeriesQuery
+                      spec:
+                        plugin:
+                            kind: PrometheusTimeSeriesQuery
+                            spec:
+                                query: instance_device:node_disk_io_time_weighted_seconds:rate1m{instance="$instance"}
+                                seriesNameFormat: '{{device}}'
+        "8":
+            kind: Panel
+            spec:
+                display:
+                    name: Disk Space Utilisation
+                plugin:
+                    kind: TimeSeriesChart
+                    spec: {}
+                queries:
+                    - kind: TimeSeriesQuery
+                      spec:
+                        plugin:
+                            kind: PrometheusTimeSeriesQuery
+                            spec:
+                                query: |
+                                    sort_desc(1 -
+                                      (
+                                       max without (mountpoint, fstype) (node_filesystem_avail_bytes{fstype!="", instance="$instance"})
+                                       /
+                                       max without (mountpoint, fstype) (node_filesystem_size_bytes{fstype!="", instance="$instance"})
+                                      )
+                                    )
+                                seriesNameFormat: '{{device}}'
+    layouts:
+        - kind: Grid
+          spec:
+            display:
+                title: Panel Group 1
+            items:
+                - x: 0
+                  "y": 0
+                  width: 12
+                  height: 8
+                  content:
+                    $ref: '#/spec/panels/0'
+                - x: 0
+                  "y": 0
+                  width: 12
+                  height: 8
+                  content:
+                    $ref: '#/spec/panels/1'
+                - x: 0
+                  "y": 0
+                  width: 12
+                  height: 8
+                  content:
+                    $ref: '#/spec/panels/2'
+                - x: 0
+                  "y": 0
+                  width: 12
+                  height: 8
+                  content:
+                    $ref: '#/spec/panels/3'
+                - x: 0
+                  "y": 0
+                  width: 12
+                  height: 8
+                  content:
+                    $ref: '#/spec/panels/4'
+                - x: 0
+                  "y": 0
+                  width: 12
+                  height: 8
+                  content:
+                    $ref: '#/spec/panels/5'
+                - x: 0
+                  "y": 0
+                  width: 12
+                  height: 8
+                  content:
+                    $ref: '#/spec/panels/6'
+                - x: 0
+                  "y": 0
+                  width: 12
+                  height: 8
+                  content:
+                    $ref: '#/spec/panels/7'
+                - x: 0
+                  "y": 0
+                  width: 12
+                  height: 8
+                  content:
+                    $ref: '#/spec/panels/8'
+    duration: 1h
+

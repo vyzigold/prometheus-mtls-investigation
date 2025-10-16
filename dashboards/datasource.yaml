@@ -1,0 +1,33 @@
+apiVersion: perses.dev/v1alpha1
+kind: PersesDatasource
+metadata:
+  name: prometheus-httpd
+  namespace: openstack
+spec:
+  config:
+    display:
+      name: "Prometheus HTTPD mTLS Datasource"
+    default: true
+    plugin:
+      kind: "PrometheusDatasource"
+      spec:
+        proxy:
+          kind: HTTPProxy
+          spec:
+            url: https://metric-storage-prometheus-httpd.openstack.svc:9091
+            #url: https://metric-storage-prometheus.openstack.svc:9090
+            secret: prometheus-httpd-secret
+  client:
+    tls:
+      enable: true
+      userCert:
+        type: secret
+        name: prometheus-client-cert
+        namespace: openstack
+        certPath: tls.crt
+        privateKeyPath: tls.key
+      caCert:
+        type: secret
+        name: combined-ca-bundle
+        namespace: openstack
+        certPath: tls-ca-bundle.pem
